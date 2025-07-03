@@ -1,4 +1,5 @@
 import random
+from tool.web_scrape import scrape_flipkart_prices
 
 class PricingEnv:
     def __init__(self, base_cost=200):
@@ -9,9 +10,9 @@ class PricingEnv:
         self.reset()
 
     def get_competitor_prices(self):
-        prices = [random.randint(400, 600) for _ in range(3)]
-        self.competitor_prices = prices
-        return prices
+        prices = scrape_flipkart_prices("red tshirt")  # 🔄 dynamic real-time
+        self.competitor_prices = prices[:3]  # use top 3 only
+        return self.competitor_prices
 
     def get_dynamic_prices(self, competitors):
         min_price = min(competitors) - 20
