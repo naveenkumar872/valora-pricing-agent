@@ -47,7 +47,3 @@ def scrape_flipkart_prices(query="red tshirt"):
     prices = extract_all_prices_from_html(html)
     print(f"🔎 Flipkart Prices for '{query}':", prices[:10])
     return prices[:10]
-
-# Run it
-if __name__ == "__main__":
-    scrape_flipkart_prices("red tshirt")
