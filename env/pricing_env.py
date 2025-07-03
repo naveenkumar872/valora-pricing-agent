@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import random
 from tool.web_scrape import scrape_flipkart_prices
 
@@ -17,7 +21,7 @@ class PricingEnv:
     def get_dynamic_prices(self, competitors):
         min_price = min(competitors) - 20
         max_price = max(competitors) + 20
-        return list(range(min_price, max_price + 1, 10))
+        return list(range(min_price, max_price + 1, 20))
 
     def simulate_sales(self, your_price, competitor_avg):
         if your_price < competitor_avg:
@@ -69,7 +73,7 @@ class PricingEnv:
 
 env = PricingEnv()
 
-for round_num in range(20):
+for round_num in range(5):
     print(f"\n🔥 ROUND {round_num + 1}")
 
     current_prices = env.possible_prices

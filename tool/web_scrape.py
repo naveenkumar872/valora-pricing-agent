@@ -16,7 +16,8 @@ def extract_all_prices_from_html(html):
 
 def scrape_flipkart_prices(query="red tshirt"):
     options = Options()
-    # options.add_argument("--headless")
+    # to debug comment the below line , it will not show the chrome opening and closing
+    options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--window-size=1920,1200")
