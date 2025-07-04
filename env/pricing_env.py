@@ -11,7 +11,7 @@ class PricingEnv:
         self.search_query = search_query
         self.page = 1
         self.slice_offset = 0
-        self.retry_count = 0  # ✅ Added retry limit
+        self.retry_count = 0
         self.state = None
         self.competitor_prices = []
         self.possible_prices = []
@@ -21,11 +21,11 @@ class PricingEnv:
         print(f"\n🔄 Getting competitor prices (Page {self.page}, Slice Offset {self.slice_offset})")
         prices = scrape_flipkart_prices(self.search_query, self.page)
         clean_prices = [p for p in prices if 50 <= p <= 5000]
-        unique_prices = sorted(set(clean_prices))  # ✅ Remove duplicates and sort
+        unique_prices = sorted(set(clean_prices))
         print(f"🧹 Cleaned & Unique prices: {unique_prices}")
 
         top_prices = unique_prices[self.slice_offset:self.slice_offset + 3]
-        print(f"🎚️ Using slice [{self.slice_offset}:{self.slice_offset + 3}] → {top_prices}")
+        print(f"🌺 Using slice [{self.slice_offset}:{self.slice_offset + 3}] → {top_prices}")
 
         if len(top_prices) < 3:
             self.retry_count += 1
@@ -37,9 +37,9 @@ class PricingEnv:
             if self.page > 10:
                 self.page = 1
                 self.slice_offset += 3
-            return self.get_competitor_prices()  # 🔁 Retry again
+            return self.get_competitor_prices()
 
-        self.retry_count = 0  # ✅ Reset retry count after success
+        self.retry_count = 0
         self.page += 1
         if self.page > 10:
             print("🔁 Page reset! Moving to next slice of prices")
@@ -69,17 +69,20 @@ class PricingEnv:
         cost = units_sold * self.base_cost
         return revenue - cost
 
-    def step(self, action_price):
-        avg_comp = self.state
-        units_sold = self.simulate_sales(action_price, avg_comp)
-        reward = self.calculate_reward(units_sold, action_price)
-
+    def step(self):
+        # Refresh competitor prices and possible price range
         new_competitors = self.get_competitor_prices()
         self.state = round(sum(new_competitors) / len(new_competitors), 2)
         self.possible_prices = self.get_dynamic_prices(new_competitors)
 
-        print(f"\n👉 [STEP]")
-        print(f"📊 Competitor Prices: {new_competitors}")
+        # Select mid-price AFTER generating new prices
+        action_price = self.possible_prices[len(self.possible_prices) // 2]
+        avg_comp = self.state
+        units_sold = self.simulate_sales(action_price, avg_comp)
+        reward = self.calculate_reward(units_sold, action_price)
+
+        print(f"\n🔯 [STEP]")
+        print(f"📈 Competitor Prices: {new_competitors}")
         print(f"📈 Avg Competitor Price: ₹{avg_comp}")
         print(f"🎯 Possible Dynamic Prices: {self.possible_prices} (count: {len(self.possible_prices)})")
         print(f"💡 Your Price: ₹{action_price}")
@@ -95,9 +98,9 @@ class PricingEnv:
         self.possible_prices = self.get_dynamic_prices(competitors)
 
         print(f"\n🔄 [RESET]")
-        print(f"🧾 Competitor Prices (reset): {competitors}")
-        print(f"📊 Starting avg competitor price: ₹{self.state}")
-        print(f"🎯 Initial Possible Prices: {self.possible_prices} (count: {len(self.possible_prices)})")
+        print(f"🗳️ Competitor Prices (reset): {competitors}")
+        print(f"📈 Starting avg competitor price: ₹{self.state}")
+        print(f"🌟 Initial Possible Prices: {self.possible_prices} (count: {len(self.possible_prices)})")
         return self.state
 
 
@@ -106,11 +109,4 @@ if __name__ == "__main__":
     env = PricingEnv(search_query="red tshirt")
     for round_num in range(15):
         print(f"\n🔥 ROUND {round_num + 1}")
-        current_prices = env.possible_prices
-        if not current_prices:
-            print("⚠️ No valid prices to pick from! Skipping round.")
-            continue
-
-        action_price = current_prices[len(current_prices) // 2]
-        print(f"🔍 Picking action price: ₹{action_price}")
-        state, reward, units_sold = env.step(action_price)
+        state, reward, units_sold = env.step()
