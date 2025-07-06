@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+from utils.reward_calculator import calculate_profit
 import random
 from tool.web_scrape import scrape_flipkart_prices
 
@@ -63,10 +63,6 @@ class PricingEnv:
         else:
             return random.randint(0, 5)
 
-    def calculate_reward(self, units_sold, price):
-        revenue = units_sold * price
-        cost = units_sold * self.base_cost
-        return revenue - cost
 
     def step(self):
         new_competitors = self.get_competitor_prices()
@@ -76,7 +72,10 @@ class PricingEnv:
         action_price = self.possible_prices[len(self.possible_prices) // 2]
         avg_comp = self.state
         units_sold = self.simulate_sales(action_price, avg_comp)
-        reward = self.calculate_reward(units_sold, action_price)
+        
+        # inside step()
+        result = calculate_profit(self.base_cost, action_price, units_sold)
+        reward = result["profit"]
 
         print(f"\n🔯 [STEP]")
         print(f"📈 Competitor Prices: {new_competitors}")
