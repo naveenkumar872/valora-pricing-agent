@@ -36,7 +36,7 @@ def scrape_flipkart_prices(query: str,page : int):
 
     driver = webdriver.Chrome(service=Service(), options=options)
 
-    url = f"https://www.flipkart.com/search?q={query.replace(' ', '+')}&sort=price_asc&page={page}"
+    url = f"https://www.flipkart.com/search?q={query.replace(' ', '+')}&sort=popularity&page={page}"
     print(f"🌐 Opening URL: {url}")
     driver.get(url)
     time.sleep(3)
