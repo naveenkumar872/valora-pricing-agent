@@ -16,6 +16,7 @@ def run_pricing_simulation(query, rounds=5,base_cost=200):
     for round_num in range(rounds):
         print(f"\n🔥 ROUND {round_num + 1}")
         state, reward, units_sold = env.step()
+     
 
         round_result = {
             "round": round_num + 1,
@@ -25,9 +26,8 @@ def run_pricing_simulation(query, rounds=5,base_cost=200):
             "picked_price": env.possible_prices[len(env.possible_prices) // 2],
             "competitor_prices": env.competitor_prices
         }
-
+        env.plot_sales_curve()
         result_history.append(round_result)
-
     return result_history
 
 

@@ -1,8 +1,10 @@
 import sys
 import os
+import random
+import matplotlib.pyplot as plt
+import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.reward_calculator import calculate_profit
-import random
 from tool.web_scrape import scrape_flipkart_prices
 
 class PricingEnv:
@@ -16,7 +18,6 @@ class PricingEnv:
         self.competitor_prices = []
         self.possible_prices = []
         self.all_prices = []  # ✅ Store all prices from current page
-        # self.reset()
 
     def get_competitor_prices(self):
         while True:
@@ -24,7 +25,7 @@ class PricingEnv:
                 print(f"\n📥 Fetching fresh prices from Flipkart (Page {self.page})")
                 prices = scrape_flipkart_prices(self.search_query, self.page)
                 clean_prices = [p for p in prices if 50 <= p <= 5000]
-                self.all_prices = sorted(set(clean_prices))
+                self.all_prices = list(set(clean_prices))
                 self.slice_index = 0
                 print(f"🧹 Cleaned & Unique prices: {self.all_prices}")
 
@@ -56,14 +57,34 @@ class PricingEnv:
         return dynamic_prices
 
     def simulate_sales(self, your_price, competitor_avg):
-        if your_price < competitor_avg:
-            return random.randint(10, 20)
-        elif your_price == competitor_avg:
-            return random.randint(5, 10)
-        else:
-            return random.randint(0, 5)
+        # Gaussian model based simulation
+        sigma = 30  # spread
+        k = 20      # scale of max units sold
+        exponent = -((your_price - competitor_avg) ** 2) / (2 * sigma ** 2)
+        units_sold = int(k * np.exp(exponent))
+        return units_sold
+
+    def plot_sales_curve(self):
+        if self.state is None:
+            print("⚠️ No state available to plot. Run at least one step.")
+            return
+
+        competitor_avg = self.state
+        prices = list(range(int(competitor_avg) - 100, int(competitor_avg) + 100, 5))
+        units = [self.simulate_sales(p, competitor_avg) for p in prices]
+
+        plt.figure(figsize=(10, 4))
+        plt.plot(prices, units, marker='o', color='purple')
+        plt.title(f"Demand Curve (Avg Competitor Price: ₹{competitor_avg})")
+        plt.xlabel("Price (₹)")
+        plt.ylabel("Expected Units Sold")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
 
 
+    
+  
     def step(self):
         new_competitors = self.get_competitor_prices()
         self.state = round(sum(new_competitors) / len(new_competitors), 2)
@@ -72,8 +93,6 @@ class PricingEnv:
         action_price = self.possible_prices[len(self.possible_prices) // 2]
         avg_comp = self.state
         units_sold = self.simulate_sales(action_price, avg_comp)
-        
-        # inside step()
         result = calculate_profit(self.base_cost, action_price, units_sold)
         reward = result["profit"]
 
