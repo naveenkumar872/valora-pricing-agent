@@ -4,7 +4,7 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from utils.reward_calculator import calculate_profit
+
 from tool.web_scrape import scrape_flipkart_prices
 
 class PricingEnv:
@@ -87,25 +87,29 @@ class PricingEnv:
   
     def step(self):
         new_competitors = self.get_competitor_prices()
-        self.state = round(sum(new_competitors) / len(new_competitors), 2)
+
+        avg = sum(new_competitors) / len(new_competitors)
+        self.state = (round(avg / 10) * 10) +5  # 👈 round to nearest 10 and add 5 to it
+        
         self.possible_prices = self.get_dynamic_prices(new_competitors)
 
-        action_price = self.possible_prices[len(self.possible_prices) // 2]
+        # action_price = self.possible_prices[len(self.possible_prices) // 2]
         avg_comp = self.state
-        units_sold = self.simulate_sales(action_price, avg_comp)
-        result = calculate_profit(self.base_cost, action_price, units_sold)
-        reward = result["profit"]
+        # units_sold = self.simulate_sales(action_price, avg_comp)
+        # result = calculate_profit(self.base_cost, action_price, units_sold)
+        # reward = result["profit"]
 
         print(f"\n🔯 [STEP]")
         print(f"📈 Competitor Prices: {new_competitors}")
         print(f"📈 Avg Competitor Price: ₹{avg_comp}")
         print(f"🎯 Possible Dynamic Prices: {self.possible_prices} (count: {len(self.possible_prices)})")
-        print(f"💡 Your Price: ₹{action_price}")
-        print(f"🛍️ Units Sold: {units_sold}")
-        print(f"💰 Profit (Reward): ₹{reward}")
-        print(f"🔁 New State (next avg competitor): ₹{self.state}")
+        # print(f"💡 Your Price: ₹{action_price}")
+        # print(f"🛍️ Units Sold: {units_sold}")
+        # print(f"💰 Profit (Reward): ₹{reward}")
+        # print(f"🔁 New State (next avg competitor): ₹{self.state}")
 
-        return self.state, reward, units_sold
+        # return self.state, reward, units_sold
+        return self.state
 
 
     #def reset(self):
