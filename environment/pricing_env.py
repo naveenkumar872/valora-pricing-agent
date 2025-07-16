@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from tool.web_scrape import scrape_flipkart_prices
+from tools.web_scraper import scrape_flipkart_prices
 
 class PricingEnv:
     def __init__(self, base_cost, search_query):

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Valora Dynamic Pricing</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Valora: AI-Powered Price Optimizer</h1>
+
+  <form method="POST">
+    <label>Search Query:</label>
+    <input type="text" name="query" placeholder="red tshirt" required><br>
+
+    <label>Base Cost:</label>
+    <input type="number" name="base_cost" placeholder="e.g. 200" required><br>
+
+    <label>Training Rounds:</label>
+    <input type="number" name="rounds" value="5"><br>
+
+    <button type="submit">Get Best Price</button>
+  </form>
+
+  {% if result %}
+    <div style="background: #dff0d8; color: #3c763d; padding: 15px; margin: 20px auto; border-radius: 8px; width: 60%;">
+  <h2>📊 Suggested Price: ₹{{ result.final_price }}</h2>
+    </div>
+    <h3>Training Summary:</h3>
+    <ul>
+      {% for r in result.training_summary %}
+        <li>Round {{ r.round }}: Sold {{ r.units_sold }} at ₹{{ r.picked_price }} → Profit ₹{{ r.reward }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</body>
+</html>
