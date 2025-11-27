@@ -69,11 +69,3 @@ def run_pricing_simulation(query, rounds=5,base_cost=200):
         "training_summary": result_history,
      }
 
-
-# # Run as script
-# if __name__ == "__main__":
-#     result = run_pricing_simulation("red tshirt", rounds=5,base_cost=150)
-
-#     print("\n📊 Final Summary:")
-#     for r in result:
-#         print(f"🔸 Round {r['round']}: Sold {r['units_sold']} at ₹{r['picked_price']} → Profit ₹{r['reward']}")

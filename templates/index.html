@@ -3,33 +3,103 @@
 <head>
   <title>Valora Dynamic Pricing</title>
   <link rel="stylesheet" href="/static/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <h1>Valora: AI-Powered Price Optimizer</h1>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <i class="fas fa-robot"></i>
+      <span>Valora</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#" class="active"><i class="fas fa-home"></i></a></li>
+      <li>
+        <button id="lightModeToggle" class="dark-mode-toggle" aria-label="Toggle light mode">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </button>
+      </li>
+    </ul>
+  </nav>
 
-  <form method="POST">
-    <label>Search Query:</label>
-    <input type="text" name="query" placeholder="red tshirt" required><br>
+  <script>
+    const lightModeToggle = document.getElementById('lightModeToggle');
+    const body = document.body;
+    
+    // Check for saved light mode preference - default is dark mode
+    if (localStorage.getItem('lightMode') === 'enabled') {
+      body.classList.add('light-mode');
+    }
 
-    <label>Base Cost:</label>
-    <input type="number" name="base_cost" placeholder="e.g. 200" required><br>
+    lightModeToggle.addEventListener('click', () => {
+      body.classList.toggle('light-mode');
+      
+      // Save preference
+      if (body.classList.contains('light-mode')) {
+        localStorage.setItem('lightMode', 'enabled');
+      } else {
+        localStorage.setItem('lightMode', null);
+      }
+    });
+  </script>
 
-    <label>Training Rounds:</label>
-    <input type="number" name="rounds" value="5"><br>
+  <div class="container">
+    <div class="hero-section">
+      <h1><i class="fas fa-magic"></i> AI-Powered Price Optimizer</h1>
+      <p class="subtitle">Get the optimal price for your products using advanced AI algorithms</p>
+    </div>
 
-    <button type="submit">Get Best Price</button>
-  </form>
+    <div class="main-content">
+      <form method="POST" class="pricing-form">
+        <div class="form-group">
+          <label><i class="fas fa-tag"></i> Product Description</label>
+          <textarea name="product_description" placeholder="Describe your product with price. E.g: I want to sell a red shirt for 200 rs" required rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fas fa-sync"></i> Training Rounds</label>
+          <input type="number" name="rounds" value="5" min="1" max="20">
+          <span class="help-text">More rounds = Better accuracy (1-20)</span>
+        </div>
+
+        <button type="submit"><i class="fas fa-calculator"></i> Calculate Best Price</button>
+      </form>
+    </div>
+
+  {% if error %}
+    <div style="background: #f8d7da; color: #721c24; padding: 15px; margin: 20px auto; border-radius: 8px; width: 60%;">
+        <p>{{ error }}</p>
+    </div>
+  {% endif %}
 
   {% if result %}
-    <div style="background: #dff0d8; color: #3c763d; padding: 15px; margin: 20px auto; border-radius: 8px; width: 60%;">
-  <h2>📊 Suggested Price: ₹{{ result.final_price }}</h2>
+    <div class="result-section">
+      <div class="price-card">
+        <div class="price-header">
+          <i class="fas fa-chart-bar"></i>
+          <h2>Suggested Price</h2>
+        </div>
+        <div class="price-amount">₹{{ result.final_price }}</div>
+      </div>
+
+      <div class="training-card">
+        <div class="card-header">
+          <i class="fas fa-history"></i>
+          <h3>Training Summary</h3>
+        </div>
+        <ul class="training-list">
+          {% for r in result.training_summary %}
+            <li>
+              <span class="round-number">Round {{ r.round }}</span>
+              <span class="sold-info"><i class="fas fa-shopping-cart"></i> {{ r.units_sold }} units</span>
+              <span class="price-info"><i class="fas fa-tag"></i> ₹{{ r.picked_price }}</span>
+              <span class="profit-info"><i class="fas fa-chart-line"></i> ₹{{ r.reward }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
-    <h3>Training Summary:</h3>
-    <ul>
-      {% for r in result.training_summary %}
-        <li>Round {{ r.round }}: Sold {{ r.units_sold }} at ₹{{ r.picked_price }} → Profit ₹{{ r.reward }}</li>
-      {% endfor %}
-    </ul>
   {% endif %}
 </body>
 </html>

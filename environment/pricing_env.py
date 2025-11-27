@@ -93,34 +93,15 @@ class PricingEnv:
         
         self.possible_prices = self.get_dynamic_prices(new_competitors)
 
-        # action_price = self.possible_prices[len(self.possible_prices) // 2]
-        avg_comp = self.state
-        # units_sold = self.simulate_sales(action_price, avg_comp)
-        # result = calculate_profit(self.base_cost, action_price, units_sold)
-        # reward = result["profit"]
 
+        avg_comp = self.state
+     
         print(f"\n🔯 [STEP]")
         print(f"📈 Competitor Prices: {new_competitors}")
         print(f"📈 Avg Competitor Price: ₹{avg_comp}")
         print(f"🎯 Possible Dynamic Prices: {self.possible_prices} (count: {len(self.possible_prices)})")
-        # print(f"💡 Your Price: ₹{action_price}")
-        # print(f"🛍️ Units Sold: {units_sold}")
-        # print(f"💰 Profit (Reward): ₹{reward}")
-        # print(f"🔁 New State (next avg competitor): ₹{self.state}")
-
-        # return self.state, reward, units_sold
+    
         return self.state
 
-
-    #def reset(self):
-    #   competitors = self.get_competitor_prices()
-    #   self.state = round(sum(competitors) / len(competitors), 2)
-    #   self.possible_prices = self.get_dynamic_prices(competitors)
-
-    #   print(f"\n🔄 [RESET]")
-    #   print(f"🗳️ Competitor Prices (reset): {competitors}")
-    #   print(f"📈 Starting avg competitor price: ₹{self.state}")
-    #   print(f"🌟 Initial Possible Prices: {self.possible_prices} (count: {len(self.possible_prices)})")
-    #   return self.state
 
 

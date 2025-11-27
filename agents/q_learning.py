@@ -37,11 +37,6 @@ def train_q_table(env, possible_actions, episodes=10):
         q_table[(state, action)] = new_q
 
 
-    # # After training, select best price for current state
-    # q_values = [Q.get((state, a), 0) for a in possible_actions]
-    # best_action_index = q_values.index(max(q_values))
-    # best_price = possible_actions[best_action_index]
-
     return  q_table
 
 

@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from bs4 import BeautifulSoup
 import time
 
-# ✅ New Flipkart price class
+
 PRICE_CLASS = "Nx9bqj"
 
 def extract_discounted_prices_only(html):
@@ -24,10 +24,10 @@ def extract_discounted_prices_only(html):
     return unique_prices
 
 def scrape_flipkart_prices(query: str,page : int):
-    print(f"\n🔎 Scrolling Flipkart for query: '{query}'")
+    print(f"\n🔎 Scrolling ecommerce web for query: '{query}'")
 
     options = Options()
-    # options.add_argument("--headless")  # enable for silent scraping
+    options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--window-size=1920,1200")
@@ -65,9 +65,9 @@ def scrape_flipkart_prices(query: str,page : int):
 
     # ✅ Save HTML
     html = driver.page_source
-    with open("flipkart_dump.html", "w", encoding="utf-8") as f:
+    with open("e-commerce_website.html", "w", encoding="utf-8") as f:
         f.write(html)
-        print("📝 HTML saved to flipkart_dump_scroll.html")
+        print("📝 HTML saved to e-commerce_website.html")
 
     driver.quit()
 
