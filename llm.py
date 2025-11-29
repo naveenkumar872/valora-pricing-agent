@@ -2,7 +2,7 @@ from langchain_nvidia_ai_endpoints import ChatNVIDIA
 import json
 test_llm = ChatNVIDIA(
                     model="meta/llama-3.1-70b-instruct",
-                    api_key="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"
+                    api_key="your_api_key"
                 )
 
 
